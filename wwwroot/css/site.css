@@ -1,0 +1,29 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.ine-body {
+  background-color: rgba(38, 47, 224, 0.86);
+  
+}
+.card {
+    font-size: 18pt;
+}
+
+.navbar-brand {
+    font-size: 18pt;
+}

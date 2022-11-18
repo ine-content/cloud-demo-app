@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="ine-view">
+    <div id="echo" class="card"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", ()=>{
+        const echo = document.getElementById('echo')
+        const showEcho = () => {
+            fetch("/api/primary/echo").then((response)=>{
+                return response.json()
+            }).then((json)=>{
+                displayEcho(echo,json)
+                /*
+                let result = `<div class="row"><div class="col">Host name</div><div class="col">${json.hostName}</div></div>`
+                result += `<div class="row"><div class="col">Host IP</div><div class="col">${json.hostIp}</div></div>`
+                result += `<div class="row"><div class="col">Host Computer name</div><div class="col">${json.computerName}</div></div>`
+                result += `<div class="row"><div class="col">Request IP</div><div class="col">${json.remoteIp}</div></div>`
+                echo.innerHTML = result
+                */
+            })
+        }
+
+        showEcho()
+    })
+</script>
+

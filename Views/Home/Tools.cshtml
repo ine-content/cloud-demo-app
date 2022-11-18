@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewData["Title"] = "Tools";
+}
+
+<h1>Tools</h1>
+
+<div class="card">
+    <div class="row"><div class="col"><button id="sql">SQL Injection</button></div><div class="col">Click the SQL injection button to test WAF</div></div>
+</div>
+
+<div id="result" class="card"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sql = document.getElementById('sql')
+        const result = document.getElementById('result')
+        sql.addEventListener("click", ()=>{
+            const settings = {
+                method:'POST',
+               
+                body:"{name:\"INSERT INTO USERS(username, password) VALUES('slick','password')\""
+            }
+            fetch("/api/primary/echo",settings).then((response) => {
+                return response.json()
+            }).then((json) => {
+                displayEcho(result,json)
+            })
+        })
+    })
+</script>
+
+
