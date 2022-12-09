@@ -7,23 +7,25 @@
 
 <div class="card">
     <div class="row"><div class="col"><button id="queue">Queue test</button></div><div class="col">click the Queue test button to send three messages to Queue storage.</div></div>
+    <div class="row"><div class="col"><button id="load">Load test</button></div><div class="col">click the Load test button to run a processor load for 3 minutes.</div></div>
 </div>
 
 <div id="result" class="card"></div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const sql = document.getElementById('queue')
+        const queue = document.getElementById('queue')
+        const load = document.getElementById('load')
         const result = document.getElementById('result')
-        sql.addEventListener("click", ()=>{
-            /*
-            const settings = {
-                method:'POST',
-               
-                body:"{name:\"INSERT INTO USERS(username, password) VALUES('slick','password');\""
-            }
-            */
+        queue.addEventListener("click", ()=>{
             fetch("/api/primary/queue?itemCount=3").then((response) => {
+                return response.text()
+            }).then((text) => {
+                result.innerHTML = text
+            })
+        })
+        load.addEventListener("click", ()=>{
+            fetch("/api/primary/load?seconds=180&threads=10").then((response) => {
                 return response.text()
             }).then((text) => {
                 result.innerHTML = text

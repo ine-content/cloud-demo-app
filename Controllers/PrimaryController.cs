@@ -5,6 +5,7 @@ using Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using System.Threading.Tasks;
+using T=System.Threading;
 using System;
 namespace csharp_webserver.Controllers
 {
@@ -49,6 +50,28 @@ namespace csharp_webserver.Controllers
 
             return new OkObjectResult($"{itemCount} messages sent to queue.");
         }
+
+        [HttpGet("load")]
+        public ActionResult<string> LoadProcessor(int seconds, int threads){
+
+            var endTime = DateTime.Now.AddSeconds(seconds);
+            for(int lcv = 0; lcv < threads; lcv++){
+                Task.Factory.StartNew((Object obj)=>{
+                    var et = obj as TaskData;
+                    double val = 1.001f;
+                    while(DateTime.Now<et.EndTime){
+                        val = Math.Pow(val,1.5);
+                        val = val > double.MaxValue / 2.0f ? 1.001f : val;
+                    }
+                },new TaskData{EndTime= endTime});
+            }
+
+            return new OkObjectResult($"Processor load until {endTime} (current server time = {DateTime.Now})");
+        }
+    }
+
+    public class TaskData {
+        public DateTime EndTime { get; set; } = DateTime.Now;
     }
 
     public class HostData
