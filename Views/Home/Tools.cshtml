@@ -1,13 +1,26 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Tools";
 }
 
 <h1>Tools</h1>
 
 <div class="card">
-    <div class="row"><div class="col"><button id="queue">Queue test</button></div><div class="col">click the Queue test button to send three messages to Queue storage.</div></div>
-    <div class="row"><div class="col"><button id="load">Load test</button></div><div class="col">click the Load test button to run a processor load for 3 minutes.</div></div>
+    <div class="row">
+        <div class="col"><button id="queue">Queue test</button></div>
+        <div class="col">click the Queue test button to send three messages to Queue storage.</div>
+    </div>
+    <div class="row">
+        <div class="col"><button id="load">Processor load test</button></div>
+        <div class="col">click the Processor load test button to run a processor load for 3 minutes.</div>
+    </div>
+    <div class="row">
+        <div class="col"><button id="rqst">REST Requests</button><br />
+            <input id="errors" type="checkbox" /> Errors<br />
+            <input id="delay" type="checkbox" /> Delays<br />
+            <input id="messages" type="number" /> Messages
+        </div>
+        <div class="col">Select the REST Requests button to send requests to the REST API.</div>
+    </div>
 </div>
 
 <div id="result" class="card"></div>
@@ -16,22 +29,45 @@
     document.addEventListener("DOMContentLoaded", () => {
         const queue = document.getElementById('queue')
         const load = document.getElementById('load')
+        const rqst = document.getElementById('rqst')
         const result = document.getElementById('result')
-        queue.addEventListener("click", ()=>{
+        queue.addEventListener("click", () => {
             fetch("/api/primary/queue?itemCount=3").then((response) => {
                 return response.text()
             }).then((text) => {
                 result.innerHTML = text
             })
         })
-        load.addEventListener("click", ()=>{
+        load.addEventListener("click", () => {
             fetch("/api/primary/load?seconds=180&threads=10").then((response) => {
                 return response.text()
             }).then((text) => {
                 result.innerHTML = text
             })
         })
+        rqst.addEventListener("click",() =>{
+            const errs = document.getElementById('errors')
+            const dly = document.getElementById('delay')
+            const cnt = document.getElementById('messages')
+            let received = 0
+            let errors = 0
+            const iterations = Number(cnt.value)
+            const delay = dly.checked ? 300 : 0
+
+            for(let lcv =0; lcv < iterations; lcv++) {
+                const d = Math.floor(Math.random()*delay)
+                const e = errs.checked && Math.floor(Math.random()*5) == 4 ? "true" : "false"
+                const url = `/api/primary/rqst?delay=${d}&error=${e}`
+                fetch(url).then((response) => {
+                    return response.text()
+                }).then((text)=>{
+                    received++
+                    result.innerHTML = `Received ${received} responses. Last response: ${text}`
+
+                })
+
+            }
+
+        })
     })
 </script>
-
-

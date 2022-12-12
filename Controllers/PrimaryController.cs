@@ -14,19 +14,21 @@ namespace csharp_webserver.Controllers
     public class PrimaryController : ControllerBase
     {
         private IConfiguration _config;
-        public PrimaryController(IConfiguration config)
+        private ILogger<PrimaryController> _logger;
+        public PrimaryController(IConfiguration config, ILogger<PrimaryController> logger)
         {
             _config = config;
+            _logger = logger;
 
         }
         [HttpGet("echo"),HttpPost("echo")]
         public ActionResult<string> Echo()
         {
             string hostName = Dns.GetHostName();
-            Console.WriteLine(hostName);
 
             // Get the IP from GetHostByName method of dns class.
             string IP = Dns.GetHostEntry(hostName).AddressList[0].ToString();
+            _logger.LogInformation($"Echo completed at {DateTime.Now }");
             return new OkObjectResult(new HostData
             {
                 hostName = Request.Host.ToString(),
@@ -46,6 +48,7 @@ namespace csharp_webserver.Controllers
             for(int lcv=0;lcv<itemCount;lcv++){
                 await client.SendMessageAsync($"Message {lcv} send at {DateTime.Now.ToLongTimeString()}");
             }
+            _logger.LogInformation($"Added messages to queue at {DateTime.Now}");
 
 
             return new OkObjectResult($"{itemCount} messages sent to queue.");
@@ -63,15 +66,28 @@ namespace csharp_webserver.Controllers
                         val = Math.Pow(val,1.5);
                         val = val > double.MaxValue / 2.0f ? 1.001f : val;
                     }
-                },new TaskData{EndTime= endTime});
+                    _logger.LogInformation($"Completed load iteration {et.Number} at {DateTime.Now}");
+                },new TaskData{EndTime= endTime, Number=lcv});
             }
 
             return new OkObjectResult($"Processor load until {endTime} (current server time = {DateTime.Now})");
         }
+
+        [HttpGet("rqst")]
+        public ActionResult<string> RestRequest(int delay, bool error) {
+            Thread.Sleep(delay);
+            if(error) {
+                return new BadRequestObjectResult("Unhandled error");
+            }
+            return new OkObjectResult("Success");
+        }
     }
+
+
 
     public class TaskData {
         public DateTime EndTime { get; set; } = DateTime.Now;
+        public int Number { get; set; } = 0;
     }
 
     public class HostData
