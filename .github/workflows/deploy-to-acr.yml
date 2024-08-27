@@ -27,6 +27,3 @@ jobs:
       - name: Push Docker image to Azure Container Registry
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ github.sha }}
-
-      - name: Output image URL
-        run: echo "Image URL: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ github.sha }}"
