@@ -24,11 +24,23 @@ jobs:
         id: datetime_tag
         run: echo "TAG=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
-      - name: Build and tag Docker image
+      - name: Build and tag Docker image with date and time
         run: |
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ env.TAG }} .
+      
+      - name: Tag Docker image as latest
+        run: |
+          docker tag ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ env.TAG }} ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:latest
 
-      - name: Push Docker image to Azure Container Registry
+      - name: Push Docker image with date and time tag
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ env.TAG }}
 
+      - name: Push Docker image with latest tag
+        run: |
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:latest
+
+      - name: Output image URLs
+        run: |
+          echo "Image with date tag URL: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:${{ env.TAG }}"
+          echo "Image with latest tag URL: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPOSITORY }}:latest"
